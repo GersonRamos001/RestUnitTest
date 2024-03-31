@@ -44,8 +44,8 @@ class StudentControllerTest {
     private StudentController studentController;
 
     //create test data
-    Estudiante estudiante = new Estudiante(1L,"Gerson", "Ramos", "gerson.ramos@gmail.com");
-    Estudiante estudiante2  = new Estudiante(2L,"Maria", "Juana", "maria.juana@gmail.com");
+    Estudiante estudiante = new Estudiante(1L, "Gerson", "Ramos", "gerson.ramos@gmail.com");
+    Estudiante estudiante2 = new Estudiante(2L, "Maria", "Juana", "maria.juana@gmail.com");
 
     @BeforeEach
     public void setUp() {
@@ -55,12 +55,26 @@ class StudentControllerTest {
 
     @Test
     public void getAllRecords_success() throws Exception {
-        List<Estudiante> records = new ArrayList<>(Arrays.asList(estudiante,estudiante2));
+        List<Estudiante> records = new ArrayList<>(Arrays.asList(estudiante, estudiante2));
         Mockito.when(studentService.getStudents()).thenReturn(records);
         mockMvc.perform(MockMvcRequestBuilders
-                .get("/api/v1/students")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .get("/api/v1/students")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(2)));
+    }
+
+    //create a unit test for the saveUpdate method
+    @Test
+    public void saveUpdate_success() throws Exception {
+        Estudiante estudiante = new Estudiante(1L, "Gerson", "Ramos", "gerson.ramos@gmail.com");
+        Mockito.when(studentService.saveOrUpdate(estudiante)).thenReturn(estudiante);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/v1/students")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectWriter.writeValueAsString(estudiante)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName").value("Gerson"));
+
     }
 }
